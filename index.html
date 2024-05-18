@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tally Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            color: #fff;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 0.5em;
+        }
+        .tally-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .person {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin: 10px;
+            padding: 20px;
+            width: 200px;
+        }
+        .person h2 {
+            font-size: 2em;
+        }
+        .person button {
+            background: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1em;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .person button.subtract {
+            background: #f44336;
+        }
+        .totals {
+            margin-top: 30px;
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tally Tracker</h1>
+    <div class="tally-container">
+        <div class="person" id="isk">
+            <h2>ISK</h2>
+            <p>Tally: <span class="tally">0</span></p>
+            <p>Income: <span class="income">0.00</span> tk</p>
+            <button onclick="updateTally('isk', 1)">Add</button>
+            <button class="subtract" onclick="updateTally('isk', -1)">Subtract</button>
+        </div>
+        <div class="person" id="ganim">
+            <h2>GANIM</h2>
+            <p>Tally: <span class="tally">0</span></p>
+            <p>Income: <span class="income">0.00</span> tk</p>
+            <button onclick="updateTally('ganim', 1)">Add</button>
+            <button class="subtract" onclick="updateTally('ganim', -1)">Subtract</button>
+        </div>
+        <div class="person" id="rafsan">
+            <h2>RAFSAN</h2>
+            <p>Tally: <span class="tally">0</span></p>
+            <p>Income: <span class="income">0.00</span> tk</p>
+            <button onclick="updateTally('rafsan', 1)">Add</button>
+            <button class="subtract" onclick="updateTally('rafsan', -1)">Subtract</button>
+        </div>
+    </div>
+    <div class="totals">
+        <p>Total Tally: <span id="total-tally">0</span></p>
+        <p>Total Income: <span id="total-income">0.00</span> tk</p>
+    </div>
+
+    <script>
+        let data = {
+            isk: 0,
+            ganim: 0,
+            rafsan: 0
+        };
+
+        function updateTally(person, change) {
+            data[person] += change;
+            if (data[person] < 0) {
+                data[person] = 0;
+            }
+            updateUI();
+            saveData();
+        }
+
+        function updateUI() {
+            for (const person in data) {
+                const tallyElement = document.querySelector(`#${person} .tally`);
+                const incomeElement = document.querySelector(`#${person} .income`);
+                tallyElement.textContent = data[person];
+                incomeElement.textContent = calculateIncome(person).toFixed(2);
+            }
+            document.getElementById('total-tally').textContent = getTotalTally();
+            document.getElementById('total-income').textContent = getTotalIncome().toFixed(2);
+        }
+
+        function calculateIncome(person) {
+            const rate = person === 'rafsan' ? 9.50 : 10.00;
+            return data[person] * rate;
+        }
+
+        function getTotalTally() {
+            return data.isk + data.ganim + data.rafsan;
+        }
+
+        function getTotalIncome() {
+            return calculateIncome('isk') + calculateIncome('ganim') + calculateIncome('rafsan');
+        }
+
+        function saveData() {
+            localStorage.setItem('tallyData', JSON.stringify(data));
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('tallyData');
+            if (savedData) {
+                data = JSON.parse(savedData);
+                updateUI();
+            }
+        }
+
+        // Initialize
+        loadData();
+    </script>
+</body>
+</html>
